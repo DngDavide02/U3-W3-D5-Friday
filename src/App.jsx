@@ -9,16 +9,18 @@ function App() {
     <Router>
       <div className="container-fluid">
         <div className="row">
-          <aside className="col-2">
+          <aside className=" p-0">
             <Sidebar />
           </aside>
-          <main className="col-12 col-md-9 offset-md-3 mainPage">
+
+          <main className=" p-3 mainPage">
             <Routes>
               <Route path="/" element={<MainSection />} />
               <Route path="/favourites" element={<FavouritesPage />} />
             </Routes>
           </main>
         </div>
+
         <Player />
       </div>
     </Router>

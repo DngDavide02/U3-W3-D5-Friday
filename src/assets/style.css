@@ -10,7 +10,7 @@ body {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 230px;
+  width: 250px;
   flex-flow: column nowrap;
   align-items: flex-start;
   background-color: black;
@@ -105,7 +105,7 @@ ul {
   }
 }
 
-@media screen and (max-width: 936px) {
+@media screen and (max-width: 1590px) {
   #sidebar {
     display: none;
   }

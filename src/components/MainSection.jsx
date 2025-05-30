@@ -40,7 +40,7 @@ const MainSection = () => {
 
       {sections.map(({ genre, title }) => (
         <div className="row justify-content-center" key={genre}>
-          <div className="col-12 col-lg-10">
+          <div className="col-12 col-xl-10">
             <MusicSection genre={genre} title={title} id={`${genre}Section`} />
           </div>
         </div>

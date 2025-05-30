@@ -62,7 +62,7 @@ const MusicSection = ({ genre, title, id }) => {
           <Spinner animation="border" variant="light" role="status" />
         </div>
       ) : (
-        <div className="row row-cols-2 row-cols-md-6 g-3">
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
           {songs.map((song) => (
             <div
               key={song.id}
@@ -74,9 +74,17 @@ const MusicSection = ({ genre, title, id }) => {
                 className="img-fluid"
                 src={song.album.cover_medium}
                 alt="track"
-                style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "8px" }}
+                style={{ width: "100%", height: "auto", maxHeight: "150px", objectFit: "cover", borderRadius: "8px" }}
               />
-              <p className="mt-2 text-truncate" title={`${song.title} - ${song.artist.name}`}>
+              <p
+                className="mt-2"
+                title={`${song.title} - ${song.artist.name}`}
+                style={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
                 {song.title}
                 <br />
                 {song.artist.name}
