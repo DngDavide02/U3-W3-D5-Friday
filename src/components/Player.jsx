@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { FaPause, FaPlay, FaStepForward, FaStepBackward, FaRandom, FaRedo } from "react-icons/fa";
 
 const Player = () => {
   const currentSong = useSelector((state) => state.player.currentSong);
@@ -49,10 +50,10 @@ const Player = () => {
             <div className="col-6 col-md-4 playerControls">
               <div className="d-flex justify-content-around align-items-center">
                 <a href="#" onClick={(e) => e.preventDefault()} aria-label="shuffle">
-                  <img src="../assets/playerbuttons/shuffle.png" alt="shuffle" />
+                  <FaRandom color="white" size={18} />
                 </a>
                 <a href="#" onClick={(e) => e.preventDefault()} aria-label="previous">
-                  <img src="../assets/playerbuttons/prev.png" alt="prev" />
+                  <FaStepBackward color="white" size={18} />
                 </a>
 
                 <a
@@ -63,14 +64,14 @@ const Player = () => {
                   }}
                   aria-label="play/pause"
                 >
-                  <img src="../assets/playerbuttons/play.png" alt="play" />
+                  {isPlaying ? <FaPause color="white" size={20} /> : <FaPlay color="white" size={20} />}
                 </a>
 
                 <a href="#" onClick={(e) => e.preventDefault()} aria-label="next">
-                  <img src="../assets/playerbuttons/next.png" alt="next" />
+                  <FaStepForward color="white" size={18} />
                 </a>
                 <a href="#" onClick={(e) => e.preventDefault()} aria-label="repeat">
-                  <img src="../assets/playerbuttons/repeat.png" alt="repeat" />
+                  <FaRedo color="white" size={18} />
                 </a>
               </div>
 
