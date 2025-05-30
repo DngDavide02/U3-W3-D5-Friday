@@ -1,16 +1,80 @@
 body {
-  background: rgb(46, 63, 87);
   background: linear-gradient(90deg, rgb(63, 86, 119) 0%, rgba(33, 44, 61, 1) 42%, rgb(15, 21, 29) 100%);
   padding-bottom: 7rem;
 }
 
-/*SIDEBAR SECTION*/
+ul {
+  list-style-type: none;
+  padding-left: 3px;
+}
+
+/* Navbar generale */
+.navbar {
+  background-color: black !important;
+  padding: 0.5rem 1rem;
+  z-index: 1200;
+}
+
+.navbar .navbar-brand {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.navbar .nav-link {
+  color: rgb(145, 145, 145) !important;
+  transition: color 0.3s ease;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.navbar .nav-link i {
+  font-size: 1.5em;
+  margin-right: 0.3rem;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+  color: white !important;
+  text-decoration: none;
+}
+
+.navbar .input-group .form-control {
+  background-color: #222;
+  border: 1px solid #444;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.navbar .input-group .form-control::placeholder {
+  color: rgb(145, 145, 145);
+}
+
+.navbar .btn-outline-light {
+  border-radius: 20px;
+  border: 1px solid transparent;
+  padding: 5px 12px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar .btn-outline-light:hover,
+.navbar .btn-outline-light:focus {
+  background-color: rgb(60, 211, 60);
+  border-color: rgb(60, 211, 60);
+  color: #000;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Sidebar Navbar fixed left */
 .navbar.fixed-left {
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   width: 250px;
+  display: flex;
   flex-flow: column nowrap;
   align-items: flex-start;
   background-color: black;
@@ -19,7 +83,7 @@ body {
 
 .navbar.fixed-left .navbar-collapse .navbar-nav a {
   color: rgb(145, 145, 145) !important;
-  transition: 0.3s;
+  transition: color 0.3s ease;
 }
 
 .navbar.fixed-left .navbar-collapse .navbar-nav a:hover {
@@ -32,11 +96,7 @@ body {
   padding-left: 10px;
 }
 
-ul {
-  list-style-type: none;
-  padding-left: 3px;
-}
-
+/* Nav buttons container */
 .nav-btn {
   display: flex;
   flex-direction: column;
@@ -52,10 +112,7 @@ ul {
   text-decoration: none;
 }
 
-.nav-link i {
-  font-size: 1.5em;
-}
-
+/* Buttons common */
 .signup-btn,
 .login-btn {
   border-radius: 20px;
@@ -69,6 +126,7 @@ ul {
   display: block;
 }
 
+/* Sign Up button */
 .signup-btn {
   background-color: #fff;
   color: #000;
@@ -77,12 +135,13 @@ ul {
 
 .signup-btn:hover,
 .signup-btn:focus {
-  color: #fff;
   background-color: rgb(60, 211, 60);
   border-color: rgb(60, 211, 60);
+  color: #fff;
   outline: none;
 }
 
+/* Login button */
 .login-btn {
   background-color: #000;
   color: #fff;
@@ -91,9 +150,9 @@ ul {
 
 .login-btn:hover,
 .login-btn:focus {
-  color: #000;
   background-color: #fff;
   border-color: #fff;
+  color: #000;
   outline: none;
 }
 
@@ -105,14 +164,33 @@ ul {
   }
 }
 
-@media screen and (max-width: 1590px) {
-  #sidebar {
-    display: none;
-  }
+/* Buttons inside navbar (horizontal) */
+.nav-btn button.signup-btn,
+.nav-btn button.login-btn {
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  min-width: 100px;
 }
 
-/* BOTTOM PLAYER SECTION*/
+/* Link Cookie Policy e Privacy */
+.navbar .nav-btn div a {
+  color: rgb(145, 145, 145);
+  text-decoration: none;
+  margin: 0 5px;
+  font-size: 0.85rem;
+}
 
+.navbar .nav-btn div a:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+/* Player bottom */
 .bg-container {
   height: 6.5rem;
   background-color: #282828;
@@ -152,8 +230,7 @@ ul {
   border-radius: 5px 0 0 5px;
 }
 
-/*MAIN PAGE SECTION*/
-
+/* Main page */
 .mainLinks {
   margin-top: 1.5rem;
   justify-content: space-evenly;
@@ -165,12 +242,12 @@ ul {
   font-size: 12px;
   opacity: 0.3;
   text-decoration: none;
+  transition: opacity 0.3s ease;
 }
 
 .mainLinks a:hover {
-  text-decoration: none;
   opacity: 1;
-  transition: 0.3s;
+  text-decoration: none;
 }
 
 .imgLinks a p,
@@ -196,7 +273,8 @@ ul {
 .mainPage img {
   width: 200px;
 }
-/* TRACK CARD STYLE */
+
+/* Track card */
 .track-card {
   background-color: #181818;
   color: white;
