@@ -16,7 +16,7 @@ const Navbar = () => {
         dispatch(setSearchResults(data.data));
       }
     } catch {
-      // Silenzioso
+      // null
     }
   };
 
