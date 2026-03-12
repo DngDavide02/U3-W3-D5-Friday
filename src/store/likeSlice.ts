@@ -1,12 +1,19 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Track } from "../types";
+
+interface LikeState {
+  likedSongs: Record<number, Track>;
+}
+
+const initialState: LikeState = {
+  likedSongs: {},
+};
 
 const likeSlice = createSlice({
   name: "likes",
-  initialState: {
-    likedSongs: {},
-  },
+  initialState,
   reducers: {
-    toggleLike: (state, action) => {
+    toggleLike: (state, action: PayloadAction<Track>) => {
       const track = action.payload;
       const trackId = track.id;
 
