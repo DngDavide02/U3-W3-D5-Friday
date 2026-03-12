@@ -42,6 +42,7 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
   // Handle category click with toggle functionality
   const handleCategoryClick = useCallback(
     (category: (typeof browseCategories)[0]) => {
+      console.log("MainSection handleCategoryClick called with:", category);
       if (selectedCategory === category.name) {
         clearContent();
       } else {
@@ -51,21 +52,13 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
     [selectedCategory, loadCategoryContent, clearContent],
   );
 
-  // Browse categories configuration
-  const browseCategoriesConfig = [
-    { genre: "rock", title: "Rock Classics", icon: Disc, color: "from-red-500 to-orange-600" },
-    { genre: "pop", title: "Pop Culture", icon: Smile, color: "from-pink-500 to-purple-600" },
-    { genre: "hiphop", title: "Hip Hop Essentials", icon: Music, color: "from-purple-500 to-indigo-600" },
-    { genre: "electronic", title: "Electronic Vibes", icon: Headphones, color: "from-cyan-500 to-blue-600" },
-    { genre: "podcasts", title: "Podcasts", icon: Mic2, color: "from-green-500 to-emerald-600" },
-    { genre: "discover", title: "Discover", icon: Compass, color: "from-yellow-500 to-orange-600" },
-  ];
-
   // Icon mapping for categories
   const getIconForCategory = useCallback((index: number) => {
     const icons = [TrendingUp, Radio, Smile, Disc, Compass, Music, Headphones, Mic2, Globe];
     return icons[index % icons.length];
   }, []);
+
+  // Remove unused browseCategoriesConfig since we now use browseCategories from hook
 
   return (
     <div className={`px-4 lg:px-6 py-6 ${className}`}>
@@ -77,22 +70,16 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {browseCategoriesConfig.map((category, index) => {
+          {browseCategories.map((category, index) => {
             const Icon = getIconForCategory(index);
-            const isSelected = selectedCategory === category.genre;
+            const isSelected = selectedCategory === category.name;
 
             return (
               <button
-                key={category.genre}
-                onClick={() =>
-                  handleCategoryClick({
-                    name: category.genre,
-                    title: category.title,
-                    icon: category.icon,
-                  })
-                }
+                key={category.name}
+                onClick={() => handleCategoryClick(category)}
                 className={`group relative overflow-hidden rounded-lg p-6 transition-all duration-300 transform hover:scale-105 hover:shadow-strong ${
-                  isSelected ? `bg-gradient-to-br ${category.color} ring-2 ring-white shadow-strong` : "bg-spotify-gray hover:bg-spotify-lighterGray"
+                  isSelected ? `bg-gradient-to-br from-purple-600 to-blue-600 ring-2 ring-white shadow-strong` : "bg-spotify-gray hover:bg-spotify-lighterGray"
                 }`}
               >
                 {/* Background Pattern */}
@@ -112,7 +99,7 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
                 <h3
                   className={`text-sm font-bold transition-all duration-300 ${isSelected ? "text-white" : "text-spotify-lighterGray group-hover:text-white"}`}
                 >
-                  {category.title}
+                  {category.name}
                 </h3>
 
                 {/* Hover Effect */}
@@ -212,8 +199,8 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
         {/* Music Sections */}
         {!loading && !error && searchResults.length === 0 && content.length === 0 && !selectedCategory && (
           <div className="space-y-8">
-            {browseCategoriesConfig.slice(0, 3).map((section) => (
-              <MusicSection key={section.genre} genre={section.genre} title={section.title} onSelectSong={handleSelectSong} />
+            {browseCategories.slice(0, 3).map((section) => (
+              <MusicSection key={section.name} genre={section.name} title={section.name} onSelectSong={handleSelectSong} />
             ))}
           </div>
         )}
