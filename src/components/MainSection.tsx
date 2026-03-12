@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { TrendingUp, Radio, Smile, Disc, Compass, Music, Headphones, Mic2, Globe, Clock } from "lucide-react";
 import MusicSection from "./MusicSection";
 import TrackCard from "./TrackCard";
-import { setCurrentSong } from "../store/playerSlice";
+import { setCurrentSong, setQueue } from "../store/playerSlice";
 import { RootState } from "../store";
 import { Track } from "../types";
 import { useBrowseContent } from "../hooks/useBrowseContent";
@@ -31,10 +31,17 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
   const searchResults = useSelector((state: RootState) => state.search.results);
   const { content, loading, error, selectedCategory, browseCategories, loadCategoryContent, clearContent } = useBrowseContent();
 
-  // Handle track selection with auto-play
+  // Handle track selection with auto-play and queue management
   const handleSelectSong = useCallback(
-    (track: Track) => {
+    (track: Track, allTracks?: Track[]) => {
+      console.log("handleSelectSong called:", track.title, "allTracks length:", allTracks?.length);
       dispatch(setCurrentSong(track));
+
+      // Set queue if all tracks are provided (from browse content or search results)
+      if (allTracks && allTracks.length > 0) {
+        console.log("Setting queue with", allTracks.length, "tracks");
+        dispatch(setQueue(allTracks));
+      }
     },
     [dispatch],
   );
@@ -150,8 +157,15 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
             </h3>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-              {searchResults.map((track: Track, index) => (
-                <TrackCard key={`${track.id}-${index}`} track={track} onClick={() => handleSelectSong(track)} size="medium" variant="card" showArtist={true} />
+              {searchResults.map((track: Track, index: number) => (
+                <TrackCard
+                  key={`${track.id}-${index}`}
+                  track={track}
+                  onClick={() => handleSelectSong(track, searchResults)}
+                  size="medium"
+                  variant="card"
+                  showArtist={true}
+                />
               ))}
             </div>
           </div>
@@ -172,8 +186,15 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-              {content.map((track: Track, index) => (
-                <TrackCard key={`${track.id}-${index}`} track={track} onClick={() => handleSelectSong(track)} size="medium" variant="card" showArtist={true} />
+              {content.map((track: Track, index: number) => (
+                <TrackCard
+                  key={`${track.id}-${index}`}
+                  track={track}
+                  onClick={() => handleSelectSong(track, content)}
+                  size="medium"
+                  variant="card"
+                  showArtist={true}
+                />
               ))}
             </div>
           </div>
@@ -199,7 +220,7 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
         {/* Music Sections */}
         {!loading && !error && searchResults.length === 0 && content.length === 0 && !selectedCategory && (
           <div className="space-y-8">
-            {browseCategories.slice(0, 3).map((section) => (
+            {browseCategories.slice(1, 4).map((section) => (
               <MusicSection key={section.name} genre={section.name} title={section.name} onSelectSong={handleSelectSong} />
             ))}
           </div>

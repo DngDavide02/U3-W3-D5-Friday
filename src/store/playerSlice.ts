@@ -78,7 +78,8 @@ const playerSlice = createSlice({
       // Set new song and reset playback state
       state.currentSong = action.payload;
       state.currentTime = 0;
-      state.duration = action.payload.duration || 0;
+      // For Deezer preview tracks, use 30 seconds as default duration
+      state.duration = 30; // Preview tracks are usually 30 seconds
       state.progress = 0;
       state.isPlaying = true;
       state.error = null;
@@ -233,8 +234,10 @@ const playerSlice = createSlice({
 
     // Queue Management
     setQueue: (state, action: PayloadAction<Track[]>) => {
+      console.log("setQueue called with", action.payload.length, "tracks");
       state.queue = action.payload;
       state.queueIndex = state.currentSong ? state.queue.findIndex((track) => track.id === state.currentSong?.id) : -1;
+      console.log("Queue set, queueIndex:", state.queueIndex, "queue length:", state.queue.length);
     },
 
     addToQueue: (state, action: PayloadAction<Track>) => {
@@ -267,7 +270,11 @@ const playerSlice = createSlice({
     },
 
     nextTrack: (state) => {
-      if (state.queue.length === 0) return;
+      console.log("nextTrack called, queue length:", state.queue.length, "queueIndex:", state.queueIndex);
+      if (state.queue.length === 0) {
+        console.log("Queue is empty, cannot go to next track");
+        return;
+      }
 
       let nextIndex = state.queueIndex;
 
@@ -288,6 +295,7 @@ const playerSlice = createSlice({
         return;
       }
 
+      console.log("Moving to track index:", nextIndex, "from:", state.queueIndex);
       state.queueIndex = nextIndex;
       state.currentSong = state.queue[nextIndex];
       state.currentTime = 0;
@@ -296,10 +304,15 @@ const playerSlice = createSlice({
     },
 
     previousTrack: (state) => {
-      if (state.queue.length === 0) return;
+      console.log("previousTrack called, queue length:", state.queue.length, "queueIndex:", state.queueIndex);
+      if (state.queue.length === 0) {
+        console.log("Queue is empty, cannot go to previous track");
+        return;
+      }
 
       // If more than 3 seconds into the track, restart it
       if (state.currentTime > 3) {
+        console.log("Restarting current track (time > 3s)");
         state.currentTime = 0;
         state.progress = 0;
         return;
@@ -315,6 +328,7 @@ const playerSlice = createSlice({
         prevIndex = state.queueIndex <= 0 ? state.queue.length - 1 : state.queueIndex - 1;
       }
 
+      console.log("Moving to track index:", prevIndex, "from:", state.queueIndex);
       state.queueIndex = prevIndex;
       state.currentSong = state.queue[prevIndex];
       state.currentTime = 0;

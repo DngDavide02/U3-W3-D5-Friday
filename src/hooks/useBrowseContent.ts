@@ -18,7 +18,7 @@ export const useBrowseContent = () => {
     Trending: ["Taylor Swift", "Drake", "Bad Bunny", "The Weeknd", "Ed Sheeran", "Dua Lipa"],
     Rock: ["Queen", "Led Zeppelin", "Nirvana", "Pink Floyd", "AC/DC", "Guns N' Roses"],
     Pop: ["Katy Perry", "Taylor Swift", "Ariana Grande", "Dua Lipa", "Madonna", "Lady Gaga"],
-    "Hip Hop": ["Eminem", "Kendrick Lamar", "Drake", "Snoop Dogg", "Jay Z", "50 Cent"],
+    HipHop: ["Eminem", "Kendrick Lamar", "Drake", "Snoop Dogg", "Jay Z", "50 Cent"],
     Electronic: ["Daft Punk", "Deadmau5", "Skrillex", "Calvin Harris", "Avicii", "Swedish House Mafia"],
     Chill: ["Billie Eilish", "Lofi Fruits", "Chillhop", "J Dilla", "Nujabes", "Bonobo"],
   };
@@ -40,7 +40,7 @@ export const useBrowseContent = () => {
       description: "Today's top pop music",
     },
     {
-      name: "Hip Hop",
+      name: "HipHop",
       searchQuery: "hip hop",
       description: "Latest hip hop tracks",
     },

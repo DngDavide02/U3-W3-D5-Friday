@@ -14,7 +14,7 @@ interface MusicSectionProps {
   genre: string;
   title: string;
   id?: string;
-  onSelectSong?: (track: Track) => void;
+  onSelectSong?: (track: Track, allTracks?: Track[]) => void;
   className?: string;
 }
 
@@ -102,9 +102,9 @@ const MusicSection: React.FC<MusicSectionProps> = ({ genre, title, id, onSelectS
   const handleSelectSong = useCallback(
     (track: Track) => {
       dispatch(setCurrentSong(track));
-      onSelectSong?.(track);
+      onSelectSong?.(track, songs);
     },
-    [dispatch, onSelectSong],
+    [dispatch, onSelectSong, songs],
   );
 
   // Handle retry

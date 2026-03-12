@@ -10,14 +10,62 @@ interface PlayerProps {
   className?: string;
 }
 
+// Keyboard hook for player controls
+const useKeyboardControls = () => {
+  const dispatch = useDispatch();
+  const { isPlaying } = useSelector((state: RootState) => state.player);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle keys when not typing in input fields
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (e.code) {
+        case "Space":
+          e.preventDefault();
+          dispatch(togglePlayPause());
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          dispatch(nextTrack());
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          dispatch(previousTrack());
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [dispatch, isPlaying]);
+};
+
 const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   const dispatch = useDispatch();
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
 
+  // Enable keyboard controls
+  useKeyboardControls();
+
   // Get player state
   const playerState = useSelector((state: RootState) => state.player);
-  const { currentSong, isPlaying, volume, isMuted, currentTime, duration } = playerState;
+  const { currentSong, isPlaying, volume, isMuted, currentTime, duration, queue, queueIndex } = playerState;
+
+  // Debug: log player state
+  useEffect(() => {
+    console.log("Player state:", {
+      currentSong: currentSong?.title,
+      isPlaying,
+      currentTime,
+      duration,
+      queueLength: queue.length,
+      queueIndex,
+    });
+  }, [currentSong, isPlaying, currentTime, duration, queue.length, queueIndex]);
 
   // Handle play/pause
   const handlePlayPause = useCallback(() => {
@@ -26,10 +74,12 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
 
   // Handle next/previous
   const handleNext = useCallback(() => {
+    console.log("Next button clicked");
     dispatch(nextTrack());
   }, [dispatch]);
 
   const handlePrevious = useCallback(() => {
+    console.log("Previous button clicked");
     dispatch(previousTrack());
   }, [dispatch]);
 
@@ -79,14 +129,17 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
     if (!audio) return;
 
     const handleTimeUpdate = () => {
+      console.log("Time update:", audio.currentTime, "Duration:", audio.duration);
       dispatch(setCurrentTime(audio.currentTime));
     };
 
     const handleLoadedMetadata = () => {
+      console.log("Metadata loaded, duration:", audio.duration);
       dispatch(setDuration(audio.duration));
     };
 
     const handleEnded = () => {
+      console.log("Audio ended, playing next track");
       dispatch(nextTrack());
     };
 
