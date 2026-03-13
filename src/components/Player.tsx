@@ -47,6 +47,7 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Enable keyboard controls
   useKeyboardControls();
@@ -89,17 +90,26 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   // Handle progress bar interaction (click and drag)
   const handleProgressChange = useCallback(
     (clientX: number) => {
-      if (!progressRef.current || !audioRef.current || !duration) {
-        console.log("Progress change blocked:", { progressRef: !!progressRef.current, audioRef: !!audioRef.current, duration });
+      if (!progressRef.current || !audioRef.current) {
+        console.log("Progress change blocked: missing refs");
         return;
       }
 
       const rect = progressRef.current.getBoundingClientRect();
       const x = Math.max(0, Math.min(rect.width, clientX - rect.left));
       const percentage = x / rect.width;
-      const newTime = percentage * duration;
 
-      console.log("Progress change:", { x, percentage, newTime, duration });
+      // Use current duration from state or audio element
+      const currentDuration = duration || audioRef.current.duration;
+
+      if (!currentDuration || isNaN(currentDuration) || !isFinite(currentDuration)) {
+        console.log("Progress change blocked: invalid duration", { duration, audioDuration: audioRef.current.duration });
+        return;
+      }
+
+      const newTime = percentage * currentDuration;
+
+      console.log("Progress change:", { x, percentage, newTime, duration: currentDuration });
 
       audioRef.current.currentTime = newTime;
       dispatch(setCurrentTime(newTime));
@@ -150,7 +160,7 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   };
 
   // Calculate progress percentage
-  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const progressPercentage = duration > 0 && !isNaN(duration) && isFinite(duration) ? (currentTime / duration) * 100 : 0;
 
   // Handle audio element
   useEffect(() => {
@@ -165,23 +175,60 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
     };
 
     const handleLoadedMetadata = () => {
-      dispatch(setDuration(audio.duration));
+      const audioDuration = audio.duration;
+      if (!isNaN(audioDuration) && isFinite(audioDuration)) {
+        dispatch(setDuration(audioDuration));
+      } else if (currentSong?.duration) {
+        dispatch(setDuration(currentSong.duration));
+      } else {
+        // Default to 30 seconds for Deezer preview tracks
+        dispatch(setDuration(30));
+      }
     };
 
     const handleEnded = () => {
       dispatch(nextTrack());
     };
 
+    const handleCanPlay = () => {
+      // Update duration when audio can play
+      const audioDuration = audio.duration;
+      if (!isNaN(audioDuration) && isFinite(audioDuration)) {
+        dispatch(setDuration(audioDuration));
+      }
+      setIsLoading(false);
+    };
+
+    const handleLoadStart = () => {
+      setIsLoading(true);
+    };
+
+    const handleWaiting = () => {
+      setIsLoading(true);
+    };
+
+    const handlePlaying = () => {
+      setIsLoading(false);
+    };
+
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("canplay", handleCanPlay);
+    audio.addEventListener("loadstart", handleLoadStart);
+    audio.addEventListener("waiting", handleWaiting);
+    audio.addEventListener("playing", handlePlaying);
 
     return () => {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("canplay", handleCanPlay);
+      audio.removeEventListener("loadstart", handleLoadStart);
+      audio.removeEventListener("waiting", handleWaiting);
+      audio.removeEventListener("playing", handlePlaying);
     };
-  }, [dispatch]); // Remove isDragging from dependencies
+  }, [dispatch, isDragging, currentSong]);
 
   // Handle song change
   useEffect(() => {
@@ -195,13 +242,8 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
     audio.src = currentSong.preview;
     audio.load();
 
-    // Set duration if available from metadata
-    if (currentSong.duration) {
-      dispatch(setDuration(currentSong.duration));
-    } else {
-      // Default to 30 seconds for Deezer preview tracks
-      dispatch(setDuration(30));
-    }
+    // Don't set duration here, let the audio element handle it
+    // The duration will be set in the loadedmetadata and canplay events
   }, [currentSong, dispatch]);
 
   // Handle playback
@@ -280,19 +322,19 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
 
               <div
                 ref={progressRef}
-                className={`flex-1 h-1 bg-spotify-gray rounded-full cursor-pointer group hover:h-1.5 transition-all duration-200 ${isDragging ? "h-1.5" : ""}`}
+                className={`flex-1 h-1 bg-spotify-gray rounded-full cursor-pointer group hover:h-1.5 transition-all duration-200 ${isDragging ? "h-1.5" : ""} ${isLoading ? "opacity-70" : ""}`}
                 onClick={handleProgressClick}
                 onMouseDown={handleProgressMouseDown}
               >
                 <div
                   className={`h-full rounded-full transition-all duration-100 relative ${
-                    isDragging ? "bg-spotify-green" : "bg-white group-hover:bg-spotify-green"
+                    isDragging ? "bg-spotify-green" : isLoading ? "bg-spotify-lighterGray animate-pulse" : "bg-white group-hover:bg-spotify-green"
                   }`}
                   style={{ width: `${progressPercentage}%` }}
                 >
                   <div
                     className={`absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-soft transition-all duration-200 ${
-                      isDragging ? "opacity-100 scale-125" : "opacity-0 group-hover:opacity-100"
+                      isDragging ? "opacity-100 scale-125" : isLoading ? "opacity-50" : "opacity-0 group-hover:opacity-100"
                     }`}
                   />
                 </div>
