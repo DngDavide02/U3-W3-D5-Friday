@@ -5,7 +5,7 @@
 
 import React, { useState, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Home, Heart, Library, PlusCircle, Download, ChevronLeft, ChevronRight, Music, Radio, Mic2 } from "lucide-react";
+import { Search, Home, Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useSearch } from "../hooks/useSearch";
 import { useAppSelector } from "../store";
 import { selectSidebarCollapsed } from "../store/uiSlice";
@@ -88,53 +88,14 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
       path: "/search",
       active: isActive("/search"),
     },
-    {
-      icon: Library,
-      label: "Your Library",
-      path: "/library",
-      active: isActive("/library"),
-    },
   ];
 
   const libraryItems = [
-    {
-      icon: PlusCircle,
-      label: "Create Playlist",
-      path: "/playlist/create",
-      active: false,
-    },
     {
       icon: Heart,
       label: "Liked Songs",
       path: "/favorites",
       active: isActive("/favorites"),
-    },
-    {
-      icon: Download,
-      label: "Downloaded",
-      path: "/downloads",
-      active: isActive("/downloads"),
-    },
-  ];
-
-  const playlistItems = [
-    {
-      icon: Music,
-      label: "My Playlist #1",
-      path: "/playlist/1",
-      active: isActive("/playlist/1"),
-    },
-    {
-      icon: Radio,
-      label: "Chill Vibes",
-      path: "/playlist/2",
-      active: isActive("/playlist/2"),
-    },
-    {
-      icon: Mic2,
-      label: "Podcasts",
-      path: "/podcasts",
-      active: isActive("/podcasts"),
     },
   ];
 
@@ -200,30 +161,6 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
           <div className="space-y-1">
             <div className="text-spotify-lighterGray text-xs font-bold uppercase tracking-wider mb-2">Library</div>
             {libraryItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center space-x-4 p-3 rounded-lg transition-all duration-200 group ${
-                  item.active ? "bg-spotify-gray text-white" : "text-spotify-lighterGray hover:text-white hover:bg-spotify-gray"
-                }`}
-              >
-                <item.icon
-                  size={20}
-                  className={`transition-transform duration-200 group-hover:scale-110 ${
-                    item.active ? "text-white" : "text-spotify-lighterGray group-hover:text-white"
-                  }`}
-                />
-                <span className="font-medium transition-all duration-200">{item.label}</span>
-              </Link>
-            ))}
-          </div>
-        )}
-
-        {/* Playlists Section */}
-        {!sidebarCollapsed && (
-          <div className="space-y-1">
-            <div className="text-spotify-lighterGray text-xs font-bold uppercase tracking-wider mb-2">Playlists</div>
-            {playlistItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
