@@ -4,7 +4,7 @@
 // Modern, responsive sidebar with navigation and search functionality
 
 import React, { useState, useCallback } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Search, Home, Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useSearch } from "../hooks/useSearch";
 import { useAppSelector } from "../store";
@@ -27,9 +27,17 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
   const [query, setQuery] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
-  const { search, loading } = useSearch();
+  const { search, loading, clearSearch } = useSearch();
   const location = useLocation();
+  const navigate = useNavigate();
   const sidebarCollapsed = useAppSelector(selectSidebarCollapsed);
+
+  // Handle navigation to Home (with search clear)
+  const handleHomeClick = useCallback(() => {
+    clearSearch(); // Clear search results
+    setQuery(""); // Clear search input
+    navigate("/"); // Navigate to home
+  }, [clearSearch, navigate]);
 
   // Handle search with debouncing
   const handleSearch = useCallback(() => {
@@ -69,6 +77,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
   // Check if navigation item is active
   const isActive = useCallback(
     (path: string) => {
+      if (path === "/") {
+        return location.pathname === "/";
+      }
       return location.pathname === path || location.pathname.startsWith(path);
     },
     [location.pathname],
@@ -81,6 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
       label: "Home",
       path: "/",
       active: isActive("/"),
+      isHome: true,
     },
     {
       icon: Search,
@@ -137,23 +149,41 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
       <div className={`flex-1 space-y-4 ${sidebarCollapsed ? "space-y-6" : "space-y-4"}`}>
         {/* Navigation Items */}
         <div className="space-y-1">
-          {navigationItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex items-center space-x-4 p-3 rounded-lg transition-all duration-200 group ${
-                item.active ? "bg-spotify-gray text-white" : "text-spotify-lighterGray hover:text-white hover:bg-spotify-gray"
-              } ${sidebarCollapsed ? "justify-center" : ""}`}
-            >
-              <item.icon
-                size={24}
-                className={`transition-transform duration-200 group-hover:scale-110 ${
-                  item.active ? "text-white" : "text-spotify-lighterGray group-hover:text-white"
-                }`}
-              />
-              {!sidebarCollapsed && <span className="font-medium transition-all duration-200">{item.label}</span>}
-            </Link>
-          ))}
+          {navigationItems.map((item) =>
+            item.isHome ? (
+              <button
+                key={item.path}
+                onClick={handleHomeClick}
+                className={`w-full flex items-center space-x-4 p-3 rounded-lg transition-all duration-200 group ${
+                  item.active ? "bg-spotify-gray text-white" : "text-spotify-lighterGray hover:text-white hover:bg-spotify-gray"
+                } ${sidebarCollapsed ? "justify-center" : ""}`}
+              >
+                <item.icon
+                  size={24}
+                  className={`transition-transform duration-200 group-hover:scale-110 ${
+                    item.active ? "text-white" : "text-spotify-lighterGray group-hover:text-white"
+                  }`}
+                />
+                {!sidebarCollapsed && <span className="font-medium transition-all duration-200">{item.label}</span>}
+              </button>
+            ) : (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center space-x-4 p-3 rounded-lg transition-all duration-200 group ${
+                  item.active ? "bg-spotify-gray text-white" : "text-spotify-lighterGray hover:text-white hover:bg-spotify-gray"
+                } ${sidebarCollapsed ? "justify-center" : ""}`}
+              >
+                <item.icon
+                  size={24}
+                  className={`transition-transform duration-200 group-hover:scale-110 ${
+                    item.active ? "text-white" : "text-spotify-lighterGray group-hover:text-white"
+                  }`}
+                />
+                {!sidebarCollapsed && <span className="font-medium transition-all duration-200">{item.label}</span>}
+              </Link>
+            ),
+          )}
         </div>
 
         {/* Library Section */}

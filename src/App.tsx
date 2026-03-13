@@ -23,6 +23,7 @@ function App() {
         <main className="flex-1 overflow-y-auto pb-24 xl:pb-20 pt-16 xl:pt-0">
           <Routes>
             <Route path="/" element={<MainSection />} />
+            <Route path="/search" element={<MainSection />} />
             <Route path="/favorites" element={<FavouritesPage />} />
           </Routes>
         </main>
