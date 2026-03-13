@@ -160,6 +160,29 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
     };
   }, [dispatch]);
 
+  // Handle song change
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !currentSong) return;
+
+    console.log("Song changed to:", currentSong.title);
+
+    // Reset time when song changes
+    dispatch(setCurrentTime(0));
+
+    // Load new song
+    audio.src = currentSong.preview;
+    audio.load();
+
+    // Set duration if available from metadata
+    if (currentSong.duration) {
+      dispatch(setDuration(currentSong.duration));
+    } else {
+      // Default to 30 seconds for Deezer preview tracks
+      dispatch(setDuration(30));
+    }
+  }, [currentSong, dispatch]);
+
   // Handle playback
   useEffect(() => {
     if (!audioRef.current) return;
@@ -195,7 +218,7 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   return (
     <>
       {/* Hidden audio element */}
-      <audio ref={audioRef} src={currentSong.preview} preload="metadata" />
+      <audio ref={audioRef} preload="metadata" />
 
       {/* Main Player */}
       <div className={`bg-spotify-darker border-t border-spotify-gray px-4 py-3 fixed bottom-0 left-0 right-0 z-50 ${className}`}>
