@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Play, Pause, SkipBack, SkipForward } from "lucide-react";
 import { RootState } from "../store";
@@ -46,6 +46,7 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   const dispatch = useDispatch();
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Enable keyboard controls
   useKeyboardControls();
@@ -85,20 +86,54 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
     dispatch(toggleMute());
   }, [dispatch]);
 
-  // Handle progress bar click
-  const handleProgressClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
+  // Handle progress bar interaction (click and drag)
+  const handleProgressInteraction = useCallback(
+    (clientX: number) => {
       if (!progressRef.current || !audioRef.current) return;
 
       const rect = progressRef.current.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const percentage = (clickX / rect.width) * 100;
+      const x = Math.max(0, Math.min(rect.width, clientX - rect.left));
+      const percentage = (x / rect.width) * 100;
+      const newTime = (percentage / 100) * duration;
 
-      audioRef.current.currentTime = (percentage / 100) * duration;
-      dispatch(setCurrentTime(audioRef.current.currentTime));
+      audioRef.current.currentTime = newTime;
+      dispatch(setCurrentTime(newTime));
     },
     [dispatch, duration],
   );
+
+  // Handle progress bar click
+  const handleProgressClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      handleProgressInteraction(e.clientX);
+    },
+    [handleProgressInteraction],
+  );
+
+  // Handle progress bar drag start
+  const handleProgressMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setIsDragging(true);
+      handleProgressInteraction(e.clientX);
+    },
+    [handleProgressInteraction],
+  );
+
+  // Handle mouse move during drag
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (isDragging) {
+        handleProgressInteraction(e.clientX);
+      }
+    },
+    [isDragging, handleProgressInteraction],
+  );
+
+  // Handle mouse up to end drag
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
 
   // Format time
   const formatTime = (time: number): string => {
@@ -112,13 +147,29 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   // Calculate progress percentage
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  // Global drag listeners for progress bar
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+
+      return () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+    }
+  }, [isDragging, handleMouseMove, handleMouseUp]);
+
   // Handle audio element
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const handleTimeUpdate = () => {
-      dispatch(setCurrentTime(audio.currentTime));
+      // Don't update time during dragging to prevent conflicts
+      if (!isDragging) {
+        dispatch(setCurrentTime(audio.currentTime));
+      }
     };
 
     const handleLoadedMetadata = () => {
@@ -138,7 +189,7 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [dispatch]);
+  }, [dispatch, isDragging]);
 
   // Handle song change
   useEffect(() => {
@@ -237,14 +288,21 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
 
               <div
                 ref={progressRef}
-                className="flex-1 h-1 bg-spotify-gray rounded-full cursor-pointer group hover:h-1.5 transition-all duration-200"
+                className={`flex-1 h-1 bg-spotify-gray rounded-full cursor-pointer group hover:h-1.5 transition-all duration-200 ${isDragging ? "h-1.5" : ""}`}
                 onClick={handleProgressClick}
+                onMouseDown={handleProgressMouseDown}
               >
                 <div
-                  className="h-full bg-white rounded-full transition-all duration-100 group-hover:bg-spotify-green relative"
+                  className={`h-full rounded-full transition-all duration-100 relative ${
+                    isDragging ? "bg-spotify-green" : "bg-white group-hover:bg-spotify-green"
+                  }`}
                   style={{ width: `${progressPercentage}%` }}
                 >
-                  <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-soft" />
+                  <div
+                    className={`absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-soft transition-all duration-200 ${
+                      isDragging ? "opacity-100 scale-125" : "opacity-0 group-hover:opacity-100"
+                    }`}
+                  />
                 </div>
               </div>
 
