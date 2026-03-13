@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward } from "lucide-react";
 import { RootState } from "../store";
 import { togglePlayPause, setPlaying, setCurrentTime, setDuration, setVolume, toggleMute, nextTrack, previousTrack } from "../store/playerSlice";
 import VolumeControl from "./VolumeControl";
-import { Track } from "../types";
 
 interface PlayerProps {
   className?: string;
@@ -58,20 +57,6 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   const isMuted = useSelector((state: RootState) => state.player.isMuted);
   const currentTime = useSelector((state: RootState) => state.player.currentTime);
   const duration = useSelector((state: RootState) => state.player.duration);
-  const queue = useSelector((state: RootState) => state.player.queue);
-  const queueIndex = useSelector((state: RootState) => state.player.queueIndex);
-
-  // Debug: log player state
-  useEffect(() => {
-    console.log("Player state:", {
-      currentSong: currentSong?.title,
-      isPlaying,
-      currentTime,
-      duration,
-      queueLength: queue.length,
-      queueIndex,
-    });
-  }, [currentSong, isPlaying, currentTime, duration, queue.length, queueIndex]);
 
   // Handle play/pause
   const handlePlayPause = useCallback(() => {
@@ -80,12 +65,10 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
 
   // Handle next/previous
   const handleNext = useCallback(() => {
-    console.log("Next button clicked");
     dispatch(nextTrack());
   }, [dispatch]);
 
   const handlePrevious = useCallback(() => {
-    console.log("Previous button clicked");
     dispatch(previousTrack());
   }, [dispatch]);
 
@@ -135,17 +118,14 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
     if (!audio) return;
 
     const handleTimeUpdate = () => {
-      console.log("Time update:", audio.currentTime, "Duration:", audio.duration);
       dispatch(setCurrentTime(audio.currentTime));
     };
 
     const handleLoadedMetadata = () => {
-      console.log("Metadata loaded, duration:", audio.duration);
       dispatch(setDuration(audio.duration));
     };
 
     const handleEnded = () => {
-      console.log("Audio ended, playing next track");
       dispatch(nextTrack());
     };
 
@@ -164,8 +144,6 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentSong) return;
-
-    console.log("Song changed to:", currentSong.title);
 
     // Reset time when song changes
     dispatch(setCurrentTime(0));

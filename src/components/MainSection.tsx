@@ -37,14 +37,12 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
 
   // Handle View All button click
   const handleViewAll = useCallback(async () => {
-    console.log("handleViewAll called");
     setRandomLoading(true);
     setShowRandomTracks(true);
     // Don't clear content here, let random tracks replace it
 
     try {
       const tracks = await getRandomTracks(20);
-      console.log("Random tracks loaded:", tracks.length);
       setRandomTracks(tracks);
     } catch (error) {
       console.error("Error loading random tracks:", error);
@@ -56,12 +54,10 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
   // Handle track selection with auto-play and queue management
   const handleSelectSong = useCallback(
     (track: Track, allTracks?: Track[]) => {
-      console.log("handleSelectSong called:", track.title, "allTracks length:", allTracks?.length);
       dispatch(setCurrentSong(track));
 
       // Set queue if all tracks are provided (from browse content or search results)
       if (allTracks && allTracks.length > 0) {
-        console.log("Setting queue with", allTracks.length, "tracks");
         dispatch(setQueue(allTracks));
       }
     },
@@ -71,7 +67,6 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
   // Handle category click with toggle functionality
   const handleCategoryClick = useCallback(
     (category: (typeof browseCategories)[0]) => {
-      console.log("MainSection handleCategoryClick called with:", category);
       if (selectedCategory === category.name) {
         clearContent();
       } else {
