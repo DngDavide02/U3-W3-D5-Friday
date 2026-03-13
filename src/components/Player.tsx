@@ -51,9 +51,15 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   // Enable keyboard controls
   useKeyboardControls();
 
-  // Get player state
-  const playerState = useSelector((state: RootState) => state.player);
-  const { currentSong, isPlaying, volume, isMuted, currentTime, duration, queue, queueIndex } = playerState;
+  // Get player state with shallow equality for better re-renders
+  const currentSong = useSelector((state: RootState) => state.player.currentSong);
+  const isPlaying = useSelector((state: RootState) => state.player.isPlaying);
+  const volume = useSelector((state: RootState) => state.player.volume);
+  const isMuted = useSelector((state: RootState) => state.player.isMuted);
+  const currentTime = useSelector((state: RootState) => state.player.currentTime);
+  const duration = useSelector((state: RootState) => state.player.duration);
+  const queue = useSelector((state: RootState) => state.player.queue);
+  const queueIndex = useSelector((state: RootState) => state.player.queueIndex);
 
   // Debug: log player state
   useEffect(() => {
