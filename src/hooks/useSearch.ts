@@ -11,7 +11,7 @@ export const useSearch = () => {
   const search = useCallback(
     async (query: string) => {
       if (!query.trim()) {
-        dispatch(clearSearchResults());
+        dispatch(clearResults());
         return;
       }
 
@@ -20,7 +20,7 @@ export const useSearch = () => {
 
       try {
         const results = await searchTracks(query);
-        dispatch(setResults(results));
+        dispatch(setResults({ tracks: results }));
       } catch (err) {
         setError("Failed to search tracks");
         console.error("Search error:", err);
@@ -32,7 +32,7 @@ export const useSearch = () => {
   );
 
   const clearSearch = useCallback(() => {
-    dispatch(clearSearchResults());
+    dispatch(clearResults());
     setError(null);
     setLoading(false);
   }, [dispatch]);

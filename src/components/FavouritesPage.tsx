@@ -1,17 +1,33 @@
 import { useSelector, useDispatch } from "react-redux";
 import TrackCard from "./TrackCard";
-import { setCurrentSong } from "../store/playerSlice";
+import { setCurrentSong, setQueue } from "../store/playerSlice";
 import { RootState } from "../store";
 import { Track } from "../types";
-import { Heart, Music } from "lucide-react";
+import { Heart, Music, Play } from "lucide-react";
 
 const FavouritesPage = () => {
   const dispatch = useDispatch();
   const likedSongs = useSelector((state: RootState) => state.likes.likedSongs);
   const favourites = Object.values(likedSongs || {});
 
+  // Debug: log favourites when component mounts or updates
+  console.log("FavouritesPage - likedSongs:", likedSongs);
+  console.log("FavouritesPage - favourites:", favourites);
+
   const handleSelectSong = (track: Track) => {
     dispatch(setCurrentSong(track));
+  };
+
+  const handlePlayAll = () => {
+    console.log("handlePlayAll called, favourites length:", favourites.length);
+    console.log("favourites:", favourites);
+    if (favourites.length > 0) {
+      dispatch(setQueue(favourites));
+      dispatch(setCurrentSong(favourites[0]));
+      console.log("Set queue and current song");
+    } else {
+      console.log("No favourites to play");
+    }
   };
 
   return (
@@ -47,8 +63,8 @@ const FavouritesPage = () => {
         <div>
           {/* Play All Button */}
           <div className="mb-6">
-            <button className="btn-primary flex items-center space-x-2">
-              <Music size={20} />
+            <button onClick={handlePlayAll} className="btn-primary flex items-center space-x-2">
+              <Play size={20} />
               <span>Play All</span>
             </button>
           </div>
