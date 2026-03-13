@@ -3,7 +3,7 @@
 // =============================================================================
 // Modern, responsive main content area with browse and search functionality
 
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TrendingUp, Radio, Smile, Disc, Compass, Music, Headphones, Mic2, Globe, Clock } from "lucide-react";
 import MusicSection from "./MusicSection";
@@ -12,6 +12,7 @@ import { setCurrentSong, setQueue } from "../store/playerSlice";
 import { RootState } from "../store";
 import { Track } from "../types";
 import { useBrowseContent } from "../hooks/useBrowseContent";
+import { getRandomTracks } from "../services/deezerService";
 
 interface MainSectionProps {
   className?: string;
@@ -30,6 +31,27 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
   const dispatch = useDispatch();
   const searchResults = useSelector((state: RootState) => state.search.results);
   const { content, loading, error, selectedCategory, browseCategories, loadCategoryContent, clearContent } = useBrowseContent();
+  const [randomTracks, setRandomTracks] = useState<Track[]>([]);
+  const [showRandomTracks, setShowRandomTracks] = useState(false);
+  const [randomLoading, setRandomLoading] = useState(false);
+
+  // Handle View All button click
+  const handleViewAll = useCallback(async () => {
+    console.log("handleViewAll called");
+    setRandomLoading(true);
+    setShowRandomTracks(true);
+    // Don't clear content here, let random tracks replace it
+
+    try {
+      const tracks = await getRandomTracks(20);
+      console.log("Random tracks loaded:", tracks.length);
+      setRandomTracks(tracks);
+    } catch (error) {
+      console.error("Error loading random tracks:", error);
+    } finally {
+      setRandomLoading(false);
+    }
+  }, []);
 
   // Handle track selection with auto-play and queue management
   const handleSelectSong = useCallback(
@@ -73,7 +95,9 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white">Browse</h2>
-          <button className="text-spotify-lighterGray hover:text-white transition-colors duration-200 text-sm font-medium">View All</button>
+          <button onClick={handleViewAll} className="text-spotify-lighterGray hover:text-white transition-colors duration-200 text-sm font-medium">
+            Random Songs
+          </button>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -125,6 +149,48 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
             <div className="flex flex-col items-center space-y-4">
               <div className="w-12 h-12 border-4 border-spotify-green border-t-transparent rounded-full animate-spin" />
               <p className="text-spotify-lighterGray text-lg">Loading amazing music...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Random Tracks Loading State */}
+        {randomLoading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="w-12 h-12 border-4 border-spotify-green border-t-transparent rounded-full animate-spin" />
+              <p className="text-spotify-lighterGray text-lg">Loading random tracks...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Random Tracks Display */}
+        {showRandomTracks && !randomLoading && randomTracks.length > 0 && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-white flex items-center">
+                <span>Random Tracks</span>
+                <span className="ml-3 text-spotify-lighterGray text-base font-normal">({randomTracks.length} tracks)</span>
+              </h3>
+
+              <button
+                onClick={() => setShowRandomTracks(false)}
+                className="text-spotify-lighterGray hover:text-white transition-colors duration-200 text-sm font-medium"
+              >
+                Clear
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {randomTracks.map((track: Track, index: number) => (
+                <TrackCard
+                  key={`${track.id}-${index}`}
+                  track={track}
+                  onClick={() => handleSelectSong(track, randomTracks)}
+                  size="medium"
+                  variant="card"
+                  showArtist={true}
+                />
+              ))}
             </div>
           </div>
         )}
