@@ -1,7 +1,4 @@
-// =============================================================================
-// Enhanced Sidebar Component
-// =============================================================================
-// Modern, responsive sidebar with navigation and search functionality
+// Sidebar component
 
 import React, { useState, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -15,14 +12,7 @@ interface SidebarProps {
 }
 
 /**
- * Enhanced Sidebar component with modern design and interactions
- * Features:
- * - Collapsible sidebar
- * - Global search functionality
- * - Navigation items with icons
- * - Responsive design
- * - Keyboard shortcuts support
- * - Smooth animations and transitions
+ * Sidebar with navigation and search
  */
 const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
   const [query, setQuery] = useState("");
@@ -32,21 +22,21 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
   const navigate = useNavigate();
   const sidebarCollapsed = useAppSelector(selectSidebarCollapsed);
 
-  // Handle navigation to Home (with search clear)
+  // Handle home navigation
   const handleHomeClick = useCallback(() => {
-    clearSearch(); // Clear search results
-    setQuery(""); // Clear search input
-    navigate("/"); // Navigate to home
+    clearSearch(); // Clear results
+    setQuery(""); // Clear input
+    navigate("/"); // Go home
   }, [clearSearch, navigate]);
 
-  // Handle search with debouncing
+  // Handle search
   const handleSearch = useCallback(() => {
     if (query.trim()) {
       search(query);
     }
   }, [query, search]);
 
-  // Handle query change with debounce
+  // Handle query change
   const handleQueryChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newQuery = e.target.value;

@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Enhanced Spotify color palette with modern design tokens
+        // Spotify colors
         spotify: {
           green: "#1DB954",
           greenHover: "#1ED760",
@@ -16,7 +16,7 @@ export default {
           lightGray: "#535353",
           lighterGray: "#B3B3B3",
           white: "#FFFFFF",
-          // Additional modern colors
+          // Additional colors
           background: "#191414",
           surface: "#121212",
           elevated: "#282828",
@@ -33,7 +33,7 @@ export default {
           error: "#E84057",
           info: "#2D77ED",
         },
-        // Modern neutral palette
+        // Neutral palette
         neutral: {
           50: "#FAFAFA",
           100: "#F5F5F5",
@@ -50,7 +50,7 @@ export default {
       },
       fontFamily: {
         circular: ["Circular Std", "system-ui", "sans-serif"],
-        // Modern font stack
+        // Font stack
         sans: [
           "Inter",
           "-apple-system",
@@ -68,7 +68,7 @@ export default {
         mono: ["JetBrains Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"],
       },
       fontSize: {
-        // Modern type scale
+        // Type scale
         xs: ["0.75rem", { lineHeight: "1rem" }],
         sm: ["0.875rem", { lineHeight: "1.25rem" }],
         base: ["1rem", { lineHeight: "1.5rem" }],
@@ -81,19 +81,19 @@ export default {
         "6xl": ["3.75rem", { lineHeight: "1" }],
       },
       spacing: {
-        // Modern spacing scale
+        // Spacing scale
         18: "4.5rem",
         88: "22rem",
         128: "32rem",
       },
       borderRadius: {
-        // Modern border radius scale
+        // Border radius
         xl: "0.75rem",
         "2xl": "1rem",
         "3xl": "1.5rem",
       },
       boxShadow: {
-        // Modern shadow system
+        // Shadow system
         soft: "0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)",
         medium: "0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
         strong: "0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 4px 25px -5px rgba(0, 0, 0, 0.1)",
@@ -160,11 +160,6 @@ export default {
     },
   },
   plugins: [
-    // Note: These plugins would need to be installed:
-    // npm install -D @tailwindcss/forms @tailwindcss/typography @tailwindcss/aspect-ratio
-    // For now, keeping them commented to avoid errors
-    // require('@tailwindcss/forms'),
-    // require('@tailwindcss/typography'),
-    // require('@tailwindcss/aspect-ratio'),
+    // Plugins: npm install -D @tailwindcss/forms @tailwindcss/typography @tailwindcss/aspect-ratio
   ],
 };

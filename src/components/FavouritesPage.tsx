@@ -10,7 +10,7 @@ const FavouritesPage = () => {
   const likedSongs = useSelector((state: RootState) => state.likes.likedSongs);
   const favourites = Object.values(likedSongs || {});
 
-  // Debug: log favourites when component mounts or updates
+  // Debug logs
   console.log("FavouritesPage - likedSongs:", likedSongs);
   console.log("FavouritesPage - favourites:", favourites);
 
@@ -19,14 +19,14 @@ const FavouritesPage = () => {
   };
 
   const handlePlayAll = () => {
-    console.log("handlePlayAll called, favourites length:", favourites.length);
-    console.log("favourites:", favourites);
+    console.log("Play all - count:", favourites.length);
+    console.log("Tracks:", favourites);
     if (favourites.length > 0) {
       dispatch(setQueue(favourites));
       dispatch(setCurrentSong(favourites[0]));
-      console.log("Set queue and current song");
+      console.log("Queue set");
     } else {
-      console.log("No favourites to play");
+      console.log("No favourites");
     }
   };
 

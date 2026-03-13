@@ -1,7 +1,4 @@
-// =============================================================================
-// Enhanced Volume Control Component
-// =============================================================================
-// Modern, accessible volume control with drag functionality and keyboard support
+// Volume control component
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -18,14 +15,7 @@ interface VolumeControlProps {
 }
 
 /**
- * Enhanced Volume Control component with modern design and interactions
- * Features:
- * - Drag-to-adjust volume slider
- * - Keyboard navigation support
- * - Visual volume indicators
- * - Mute/unmute functionality
- * - Accessibility support
- * - Smooth animations and transitions
+ * Volume control with drag and keyboard support
  */
 const VolumeControl: React.FC<VolumeControlProps> = ({
   volume: propVolume,
@@ -39,17 +29,17 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 
-  // Get player state if props not provided
+  // Get player state
   const playerVolume = useSelector((state: RootState) => state.player.volume);
   const playerIsMuted = useSelector((state: RootState) => state.player.isMuted);
 
   const volume = propVolume ?? playerVolume;
   const isMuted = propIsMuted ?? playerIsMuted;
 
-  // Calculate effective volume
+  // Calculate volume
   const effectiveVolume = isMuted ? 0 : volume;
 
-  // Get appropriate volume icon based on level
+  // Get volume icon
   const getVolumeIcon = useCallback(() => {
     if (effectiveVolume === 0 || isMuted) return VolumeX;
     if (effectiveVolume < 0.33) return Volume;
@@ -86,7 +76,7 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
     }
   }, [dispatch, propOnMuteToggle]);
 
-  // Mouse event handlers
+  // Mouse events
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
@@ -109,7 +99,7 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
     setIsDragging(false);
   }, []);
 
-  // Keyboard event handlers
+  // Keyboard events
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       switch (e.key) {
@@ -156,14 +146,14 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
-  // Format volume percentage
+  // Format percentage
   const formatVolumePercentage = (vol: number): string => {
     return `${Math.round(vol * 100)}%`;
   };
 
   return (
     <div className={`flex items-center space-x-3 ${className}`} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
-      {/* Mute/Unmute Button */}
+      {/* Mute Button */}
       <button
         onClick={handleMuteToggle}
         className="text-spotify-lighterGray hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-spotify-gray group"
@@ -209,7 +199,7 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
           </div>
         </div>
 
-        {/* Volume Percentage Display */}
+        {/* Volume Display */}
         <span className="text-xs text-spotify-lighterGray min-w-[40px] text-right tabular-nums font-mono">{formatVolumePercentage(effectiveVolume)}</span>
       </div>
     </div>

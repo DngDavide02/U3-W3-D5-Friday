@@ -1,7 +1,4 @@
-// =============================================================================
-// Enhanced Track Card Component
-// =============================================================================
-// Modern, responsive track card with hover effects and interactions
+// Track card component
 
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,14 +20,7 @@ interface TrackCardProps {
 }
 
 /**
- * Enhanced Track Card component with modern design and interactions
- * Features:
- * - Multiple size variants (small, medium, large)
- * - Multiple layout variants (card, list, compact)
- * - Hover effects with play button overlay
- * - Like functionality
- * - Responsive design
- * - Accessibility support
+ * Track card with hover effects
  */
 const TrackCard: React.FC<TrackCardProps> = ({
   track,
@@ -45,7 +35,7 @@ const TrackCard: React.FC<TrackCardProps> = ({
   const dispatch = useDispatch();
   const liked = useSelector((state: RootState) => state.likes.likedSongs[track.id]);
 
-  // Handle like toggle with event propagation stop
+  // Handle like toggle
   const handleToggleLike = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -54,7 +44,7 @@ const TrackCard: React.FC<TrackCardProps> = ({
     [dispatch, track],
   );
 
-  // Handle track click with auto-play
+  // Handle track click
   const handleTrackClick = useCallback(() => {
     dispatch(setCurrentSong(track));
     onClick?.();
@@ -64,19 +54,19 @@ const TrackCard: React.FC<TrackCardProps> = ({
   const handleMoreOptions = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      // Future: Implement context menu or modal
+      // Future: context menu
       console.log("More options for:", track.title);
     },
     [track],
   );
 
-  // Get track information with fallbacks
+  // Get track info
   const cover = track?.album?.cover_medium || "https://via.placeholder.com/250x250?text=No+Cover";
   const artist = track?.artist?.name || "Unknown Artist";
   const title = track?.title || "Untitled";
   const album = track?.album?.title || "Unknown Album";
 
-  // Size configurations
+  // Size configs
   const sizeClasses = {
     small: {
       container: "max-w-[160px]",
@@ -108,7 +98,7 @@ const TrackCard: React.FC<TrackCardProps> = ({
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  // Card Variant
+  // Card variant
   if (variant === "card") {
     return (
       <div
@@ -119,7 +109,7 @@ const TrackCard: React.FC<TrackCardProps> = ({
         onKeyDown={(e) => e.key === "Enter" && handleTrackClick()}
         aria-label={`Play ${title} by ${artist}`}
       >
-        {/* Album Cover with Play Overlay */}
+        {/* Album Cover */}
         <div className="relative overflow-hidden rounded-lg mb-3 shadow-medium group-hover:shadow-strong transition-all duration-300">
           <img
             src={cover}
@@ -128,7 +118,7 @@ const TrackCard: React.FC<TrackCardProps> = ({
             loading="lazy"
           />
 
-          {/* Play Button Overlay */}
+          {/* Play Button */}
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
             <div className="bg-spotify-green rounded-full p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-strong">
               <Play size={size === "small" ? 16 : size === "medium" ? 20 : 24} className="text-white fill-white ml-0.5" />

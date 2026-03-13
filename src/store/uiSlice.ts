@@ -1,39 +1,36 @@
-// =============================================================================
-// UI Slice - Modern UI State Management
-// =============================================================================
-// Enhanced UI state management for responsive design and user experience
+// UI state management
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Notification } from '../types';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Notification } from "../types";
 
 export interface UIState {
-  // Navigation and Layout
+  // Navigation
   sidebarCollapsed: boolean;
-  currentView: 'home' | 'search' | 'library' | 'favorites' | 'browse';
+  currentView: "home" | "search" | "library" | "favorites" | "browse";
   mobileMenuOpen: boolean;
-  
-  // Theme and Appearance
-  theme: 'dark' | 'light';
-  
+
+  // Theme
+  theme: "dark" | "light";
+
   // Notifications
   notifications: Notification[];
-  
-  // Loading States
+
+  // Loading
   globalLoading: boolean;
-  
-  // Modals and Overlays
-  activeModal: 'none' | 'settings' | 'about' | 'help';
-  
-  // Responsive Breakpoints
+
+  // Modals
+  activeModal: "none" | "settings" | "about" | "help";
+
+  // Breakpoints
   isMobile: boolean;
   isTablet: boolean;
   isDesktop: boolean;
-  
-  // User Preferences
+
+  // Preferences
   autoPlay: boolean;
   showLyrics: boolean;
   highQualityAudio: boolean;
-  
+
   // Accessibility
   reducedMotion: boolean;
   keyboardNavigation: boolean;
@@ -41,12 +38,12 @@ export interface UIState {
 
 const initialState: UIState = {
   sidebarCollapsed: false,
-  currentView: 'home',
+  currentView: "home",
   mobileMenuOpen: false,
-  theme: 'dark',
+  theme: "dark",
   notifications: [],
   globalLoading: false,
-  activeModal: 'none',
+  activeModal: "none",
   isMobile: false,
   isTablet: false,
   isDesktop: true,
@@ -58,13 +55,13 @@ const initialState: UIState = {
 };
 
 const uiSlice = createSlice({
-  name: 'ui',
+  name: "ui",
   initialState,
   reducers: {
     // Navigation
-    setCurrentView: (state, action: PayloadAction<UIState['currentView']>) => {
+    setCurrentView: (state, action: PayloadAction<UIState["currentView"]>) => {
       state.currentView = action.payload;
-      state.mobileMenuOpen = false; // Close mobile menu when navigating
+      state.mobileMenuOpen = false; // Close menu on navigate
     },
 
     toggleSidebar: (state) => {
@@ -84,70 +81,71 @@ const uiSlice = createSlice({
     },
 
     // Theme
-    setTheme: (state, action: PayloadAction<UIState['theme']>) => {
+    setTheme: (state, action: PayloadAction<UIState["theme"]>) => {
       state.theme = action.payload;
     },
 
     toggleTheme: (state) => {
-      state.theme = state.theme === 'dark' ? 'light' : 'dark';
+      state.theme = state.theme === "dark" ? "light" : "dark";
     },
 
     // Notifications
-    addNotification: (state, action: PayloadAction<Omit<Notification, 'id' | 'timestamp'>>) => {
+    addNotification: (state, action: PayloadAction<Omit<Notification, "id" | "timestamp">>) => {
       const notification: Notification = {
         ...action.payload,
         id: Date.now().toString(),
         timestamp: Date.now(),
       };
       state.notifications.unshift(notification);
-      
-      // Limit notifications to 10
+
+      // Limit to 10 notifications
       if (state.notifications.length > 10) {
         state.notifications = state.notifications.slice(0, 10);
       }
     },
 
     removeNotification: (state, action: PayloadAction<string>) => {
-      state.notifications = state.notifications.filter(
-        notification => notification.id !== action.payload
-      );
+      state.notifications = state.notifications.filter((notification) => notification.id !== action.payload);
     },
 
     clearNotifications: (state) => {
       state.notifications = [];
     },
 
-    // Loading States
+    // Loading
     setGlobalLoading: (state, action: PayloadAction<boolean>) => {
       state.globalLoading = action.payload;
     },
 
     // Modals
-    setActiveModal: (state, action: PayloadAction<UIState['activeModal']>) => {
+    setActiveModal: (state, action: PayloadAction<UIState["activeModal"]>) => {
       state.activeModal = action.payload;
     },
 
     closeModal: (state) => {
-      state.activeModal = 'none';
+      state.activeModal = "none";
     },
 
-    // Responsive Breakpoints
-    setBreakpoints: (state, action: PayloadAction<{
-      isMobile: boolean;
-      isTablet: boolean;
-      isDesktop: boolean;
-    }>) => {
+    // Breakpoints
+    setBreakpoints: (
+      state,
+      action: PayloadAction<{
+        isMobile: boolean;
+        isTablet: boolean;
+        isDesktop: boolean;
+      }>,
+    ) => {
       state.isMobile = action.payload.isMobile;
       state.isTablet = action.payload.isTablet;
       state.isDesktop = action.payload.isDesktop;
-      
-      // Auto-collapse sidebar on mobile
+
+      // Auto-collapse on mobile
       if (action.payload.isMobile) {
         state.sidebarCollapsed = true;
       }
     },
 
-    // User Preferences
+    // Preferences
     setAutoPlay: (state, action: PayloadAction<boolean>) => {
       state.autoPlay = action.payload;
     },
@@ -196,7 +194,7 @@ const uiSlice = createSlice({
   },
 });
 
-// Export actions
+// Actions
 export const {
   setCurrentView,
   toggleSidebar,

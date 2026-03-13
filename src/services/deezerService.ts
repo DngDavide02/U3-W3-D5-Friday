@@ -10,7 +10,7 @@ export const searchTracks = async (query: string): Promise<Track[]> => {
 
     if (!response.ok) {
       if (response.status === 429) {
-        // Rate limited, wait and retry once
+        // Rate limit retry
         await new Promise((resolve) => setTimeout(resolve, 2000));
         const retryResponse = await fetch(`${DEEZER_API_BASE}/search?q=${encodeURIComponent(query)}`);
         if (!retryResponse.ok) return [];
@@ -72,8 +72,8 @@ export const getArtistTracks = async (artistId: string): Promise<Track[]> => {
 
 export const getRandomTracks = async (limit: number = 20): Promise<Track[]> => {
   try {
-    // Try to get tracks from different popular artists/genres to get variety
-    const artistIds = [13, 1, 2, 27, 137]; // Popular artist IDs on Deezer
+    // Get variety from popular artists
+    const artistIds = [13, 1, 2, 27, 137]; // Popular artists
     const allTracks: Track[] = [];
 
     for (const artistId of artistIds) {
@@ -85,13 +85,13 @@ export const getRandomTracks = async (limit: number = 20): Promise<Track[]> => {
         allTracks.push(...tracks);
       }
 
-      // If we have enough tracks, break
+      // Enough tracks collected
       if (allTracks.length >= limit) {
         break;
       }
     }
 
-    // If we don't have enough tracks, try a general search with random terms
+    // Fallback to random search
     if (allTracks.length < limit) {
       const randomTerms = ["a", "the", "love", "dance", "rock", "pop", "song", "music"];
       const randomTerm = randomTerms[Math.floor(Math.random() * randomTerms.length)];
@@ -105,13 +105,13 @@ export const getRandomTracks = async (limit: number = 20): Promise<Track[]> => {
       }
     }
 
-    // Remove duplicates based on track ID
+    // Remove duplicates
     const uniqueTracks = allTracks.filter((track, index, self) => index === self.findIndex((t) => t.id === track.id));
 
-    // Shuffle the tracks to make them random
+    // Shuffle tracks
     const shuffled = uniqueTracks.sort(() => Math.random() - 0.5);
 
-    // Return only the requested number of tracks
+    // Limit results
     return shuffled.slice(0, limit);
   } catch (error) {
     console.error("Error getting random tracks:", error);

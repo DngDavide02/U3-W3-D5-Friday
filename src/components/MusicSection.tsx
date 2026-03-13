@@ -1,7 +1,4 @@
-// =============================================================================
-// Enhanced Music Section Component
-// =============================================================================
-// Modern, responsive music section with genre-based content loading
+// Music section component
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -19,13 +16,7 @@ interface MusicSectionProps {
 }
 
 /**
- * Enhanced Music Section component with modern design and interactions
- * Features:
- * - Genre-based music discovery
- * - Rate limiting aware API calls
- * - Loading and error states
- * - Responsive grid layouts
- * - Smooth animations and transitions
+ * Music section with genre-based content
  */
 const MusicSection: React.FC<MusicSectionProps> = ({ genre, title, id, onSelectSong, className = "" }) => {
   const dispatch = useDispatch();
@@ -33,7 +24,7 @@ const MusicSection: React.FC<MusicSectionProps> = ({ genre, title, id, onSelectS
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Artist configuration by genre
+  // Artists by genre
   const artistsByGenre: Record<string, string[]> = {
     rock: ["Queen", "Led Zeppelin", "Nirvana", "Pink Floyd", "AC/DC", "Guns N' Roses"],
     pop: ["Katy Perry", "Taylor Swift", "Ariana Grande", "Dua Lipa", "Madonna", "Lady Gaga"],
@@ -43,7 +34,7 @@ const MusicSection: React.FC<MusicSectionProps> = ({ genre, title, id, onSelectS
     classical: ["Mozart", "Beethoven", "Bach", "Chopin", "Vivaldi"],
   };
 
-  // Shuffle array utility
+  // Shuffle utility
   const shuffleArray = useCallback(<T extends any>(array: T[]): T[] => {
     const newArray = [...array];
     for (let i = newArray.length - 1; i > 0; i--) {
@@ -53,7 +44,7 @@ const MusicSection: React.FC<MusicSectionProps> = ({ genre, title, id, onSelectS
     return newArray;
   }, []);
 
-  // Fetch songs from artists with rate limiting
+  // Fetch songs with rate limiting
   const fetchSongsFromArtists = useCallback(
     async (artistList: string[]) => {
       const selectedSongs: Track[] = [];
@@ -61,11 +52,11 @@ const MusicSection: React.FC<MusicSectionProps> = ({ genre, title, id, onSelectS
       setError(null);
 
       try {
-        // Add delay between requests to avoid rate limiting
+        // Add delay between requests
         for (let i = 0; i < artistList.length; i++) {
           const artist = artistList[i];
 
-          // Add delay between requests (500ms)
+          // Add delay (500ms)
           if (i > 0) {
             await new Promise((resolve) => setTimeout(resolve, 500));
           }
@@ -79,10 +70,10 @@ const MusicSection: React.FC<MusicSectionProps> = ({ genre, title, id, onSelectS
               selectedSongs.push(...topSongs);
             }
           } else if (response.status === 429) {
-            // If rate limited, wait longer and retry once
+            // Rate limited - wait and retry
             console.log(`Rate limited for ${artist}, waiting 2 seconds...`);
             await new Promise((resolve) => setTimeout(resolve, 2000));
-            continue; // Skip this artist for now
+            continue; // Skip this artist
           }
         }
 
@@ -114,10 +105,10 @@ const MusicSection: React.FC<MusicSectionProps> = ({ genre, title, id, onSelectS
     fetchSongsFromArtists(shuffledArtists);
   }, [genre, shuffleArray, fetchSongsFromArtists]);
 
-  // Load genre content on mount
+  // Load genre content
   useEffect(() => {
     const artistList = artistsByGenre[genre.toLowerCase()] || [];
-    // Get only first 3 artists per genre to reduce API load
+    // Get first 3 artists to reduce API load
     const shuffledArtists = shuffleArray(artistList).slice(0, 3);
     fetchSongsFromArtists(shuffledArtists);
   }, [genre, shuffleArray, fetchSongsFromArtists]);

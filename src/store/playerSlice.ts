@@ -1,44 +1,41 @@
-// =============================================================================
-// Player Slice - Modern Redux Toolkit Implementation
-// =============================================================================
-// Enhanced player state management with comprehensive controls and type safety
+// Player state management
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Track, RepeatMode } from "../types";
 
-// Modern player state interface with enhanced features
+// Player state interface
 export interface PlayerState {
-  // Current track information
+  // Track
   currentSong: Track | null;
 
-  // Playback state
+  // Playback
   isPlaying: boolean;
   isLoading: boolean;
   error: string | null;
 
-  // Volume controls
-  volume: number; // 0 to 1
+  // Volume
+  volume: number; // 0-1
   isMuted: boolean;
-  previousVolume: number; // For unmute functionality
+  previousVolume: number; // For unmute
 
-  // Playback modes
+  // Modes
   isShuffled: boolean;
   repeatMode: RepeatMode;
 
-  // Time tracking
-  currentTime: number; // Current position in seconds
-  duration: number; // Total duration in seconds
-  progress: number; // Progress percentage 0-100
+  // Time
+  currentTime: number; // Position (seconds)
+  duration: number; // Duration (seconds)
+  progress: number; // Progress 0-100
 
-  // Queue management (future enhancement)
+  // Queue
   queue: Track[];
   queueIndex: number;
 
-  // Playback history
+  // History
   history: Track[];
 
   // Audio metadata
-  playbackRate: number; // For speed control
+  playbackRate: number; // Speed control
 }
 
 const initialState: PlayerState = {
@@ -46,7 +43,7 @@ const initialState: PlayerState = {
   isPlaying: false,
   isLoading: false,
   error: null,
-  volume: 0.7, // Default to 70% volume
+  volume: 0.7, // Default volume
   isMuted: false,
   previousVolume: 0.7,
   isShuffled: false,

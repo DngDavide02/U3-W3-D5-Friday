@@ -1,7 +1,4 @@
-// =============================================================================
-// Enhanced Navigation Bar Component
-// =============================================================================
-// Modern, responsive navigation bar with search functionality
+// Navigation bar component
 
 import React, { useState, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -15,13 +12,7 @@ interface MyNavBarProps {
 }
 
 /**
- * Enhanced Navigation Bar component with modern design and interactions
- * Features:
- * - Global search functionality
- * - Responsive mobile menu
- * - User account integration
- * - Smooth animations and transitions
- * - Keyboard shortcuts support
+ * Navigation bar with search functionality
  */
 const MyNavBar: React.FC<MyNavBarProps> = ({ className = "" }) => {
   const [query, setQuery] = useState("");
@@ -31,20 +22,20 @@ const MyNavBar: React.FC<MyNavBarProps> = ({ className = "" }) => {
   const location = useLocation();
   const user = useAppSelector(selectUserPreferences);
 
-  // Handle search with debouncing
+  // Handle search
   const handleSearch = useCallback(() => {
     if (query.trim()) {
       search(query);
     }
   }, [query, search]);
 
-  // Handle query change with debounce
+  // Handle query change
   const handleQueryChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newQuery = e.target.value;
       setQuery(newQuery);
 
-      // Real-time search with debounce
+      // Debounced search
       if (newQuery.trim()) {
         const timeoutId = setTimeout(() => {
           search(newQuery);

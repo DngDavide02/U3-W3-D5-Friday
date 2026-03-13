@@ -1,7 +1,4 @@
-// =============================================================================
-// Enhanced Main Section Component
-// =============================================================================
-// Modern, responsive main content area with browse and search functionality
+// Main section component
 
 import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,13 +16,7 @@ interface MainSectionProps {
 }
 
 /**
- * Enhanced Main Section component with modern design and interactions
- * Features:
- * - Dynamic browse categories
- * - Search results display
- * - Music sections with lazy loading
- * - Responsive grid layouts
- * - Smooth animations and transitions
+ * Main section with browse and search functionality
  */
 const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
   const dispatch = useDispatch();
@@ -35,7 +26,7 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
   const [showRandomTracks, setShowRandomTracks] = useState(false);
   const [randomLoading, setRandomLoading] = useState(false);
 
-  // Handle View All button click
+  // Handle view all
   const handleViewAll = useCallback(async () => {
     setRandomLoading(true);
     setShowRandomTracks(true);
@@ -51,12 +42,12 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
     }
   }, []);
 
-  // Handle track selection with auto-play and queue management
+  // Handle track selection
   const handleSelectSong = useCallback(
     (track: Track, allTracks?: Track[]) => {
       dispatch(setCurrentSong(track));
 
-      // Set queue if all tracks are provided (from browse content or search results)
+      // Set queue if provided
       if (allTracks && allTracks.length > 0) {
         dispatch(setQueue(allTracks));
       }
@@ -64,7 +55,7 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
     [dispatch],
   );
 
-  // Handle category click with toggle functionality
+  // Handle category click
   const handleCategoryClick = useCallback(
     (category: (typeof browseCategories)[0]) => {
       if (selectedCategory === category.name) {
@@ -76,13 +67,11 @@ const MainSection: React.FC<MainSectionProps> = ({ className = "" }) => {
     [selectedCategory, loadCategoryContent, clearContent],
   );
 
-  // Icon mapping for categories
+  // Get category icon
   const getIconForCategory = useCallback((index: number) => {
     const icons = [TrendingUp, Radio, Smile, Disc, Compass, Music, Headphones, Mic2, Globe];
     return icons[index % icons.length];
   }, []);
-
-  // Remove unused browseCategoriesConfig since we now use browseCategories from hook
 
   return (
     <div className={`px-4 lg:px-6 py-6 ${className}`}>

@@ -1,28 +1,25 @@
-// =============================================================================
-// Search Slice - Modern Search State Management
-// =============================================================================
-// Enhanced search functionality with comprehensive state management
+// Search state management
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Track, Album, Artist } from "../types";
 
 export interface SearchState {
-  // Query and Results
+  // Query
   query: string;
   results: Track[];
   albums: Album[];
   artists: Artist[];
 
-  // Loading and Error States
+  // States
   loading: boolean;
   error: string | null;
   isSearching: boolean;
 
-  // Search History and Suggestions
+  // History
   searchHistory: string[];
   suggestions: string[];
 
-  // Search Configuration
+  // Config
   searchType: "all" | "tracks" | "albums" | "artists";
   filters: {
     genre?: string;

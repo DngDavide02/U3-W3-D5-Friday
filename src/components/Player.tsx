@@ -1,3 +1,4 @@
+// Player component
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Play, Pause, SkipBack, SkipForward } from "lucide-react";
@@ -9,14 +10,14 @@ interface PlayerProps {
   className?: string;
 }
 
-// Keyboard hook for player controls
+// Keyboard controls
 const useKeyboardControls = () => {
   const dispatch = useDispatch();
   const { isPlaying } = useSelector((state: RootState) => state.player);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Only handle keys when not typing in input fields
+      // Skip when typing
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
       }

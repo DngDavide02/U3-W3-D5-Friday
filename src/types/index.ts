@@ -1,26 +1,20 @@
-// =============================================================================
-// Core Music Streaming Types
-// =============================================================================
-// Enhanced type definitions for a modern music streaming application
-// with comprehensive TypeScript support and type safety
+// Music streaming types
 
-// =============================================================================
 // Track & Music Content Types
-// =============================================================================
 
 export interface Track {
   id: number;
   title: string;
-  preview: string; // Audio preview URL
-  duration: number; // Duration in seconds
-  link: string; // Deezer track URL
-  position: number; // Position in album
-  rank: number; // Chart rank
-  explicit: boolean; // Explicit content flag
+  preview: string; // Audio URL
+  duration: number; // Seconds
+  link: string; // Deezer URL
+  position: number; // Album position
+  rank: number; // Chart position
+  explicit: boolean; // Explicit content
   explicit_content_lyrics: number;
   explicit_content_cover: number;
-  isrc: string; // International Standard Recording Code
-  gain: number; // Audio gain
+  isrc: string; // Recording code
+  gain: number; // Audio level
   release_date: string;
   artist: Artist;
   album: Album;
@@ -56,25 +50,23 @@ export interface Album {
   explicit_content_cover: number;
   fans: number;
   release_date: string;
-  record_type: string; // 'album', 'single', 'ep'
+  record_type: string; // album/single/ep
   available: boolean;
-  tracks?: Track[]; // Optional track list when album details are loaded
+  tracks?: Track[]; // Album tracks
 }
 
-// =============================================================================
 // Player State Types
-// =============================================================================
 
 export interface PlayerState {
   currentSong: Track | null;
   isPlaying: boolean;
-  volume: number; // 0 to 1
+  volume: number; // 0-1
   isMuted: boolean;
   isShuffled: boolean;
   repeatMode: RepeatMode;
-  currentTime: number; // Current playback position in seconds
-  duration: number; // Total duration in seconds
-  progress: number; // Progress percentage 0-100
+  currentTime: number; // Playback position (seconds)
+  duration: number; // Total duration (seconds)
+  progress: number; // Progress 0-100
   isLoading: boolean;
   error: string | null;
 }
@@ -85,9 +77,7 @@ export enum RepeatMode {
   ONE = "one",
 }
 
-// =============================================================================
 // UI State Types
-// =============================================================================
 
 export interface LikeState {
   likedSongs: Record<number, Track>;
@@ -115,9 +105,7 @@ export interface BrowseState {
   error: string | null;
 }
 
-// =============================================================================
 // Application State Types
-// =============================================================================
 
 export interface RootState {
   player: PlayerState;
@@ -130,13 +118,11 @@ export interface RootState {
 export interface UIState {
   sidebarCollapsed: boolean;
   currentView: "home" | "search" | "library" | "favorites" | "browse";
-  theme: "dark" | "light"; // Future theme support
+  theme: "dark" | "light"; // Theme support
   notifications: Notification[];
 }
 
-// =============================================================================
 // Component Props Types
-// =============================================================================
 
 export interface TrackCardProps {
   track: Track;
@@ -168,9 +154,7 @@ export interface VolumeControlProps {
   className?: string;
 }
 
-// =============================================================================
 // API & Service Types
-// =============================================================================
 
 export interface DeezerApiResponse<T> {
   data: T[];
@@ -194,9 +178,7 @@ export interface AlbumResponse {
   total: number;
 }
 
-// =============================================================================
 // Utility Types
-// =============================================================================
 
 export interface Notification {
   id: string;
@@ -217,9 +199,7 @@ export interface AudioMetadata {
   artwork?: string;
 }
 
-// =============================================================================
 // Event Types
-// =============================================================================
 
 export interface PlayerEvent {
   type: "play" | "pause" | "ended" | "error" | "timeupdate" | "loadstart";
@@ -236,9 +216,7 @@ export interface KeyboardShortcut {
   description: string;
 }
 
-// =============================================================================
 // Configuration Types
-// =============================================================================
 
 export interface AppConfig {
   apiBaseUrl: string;
@@ -249,9 +227,7 @@ export interface AppConfig {
   enableNotifications: boolean;
 }
 
-// =============================================================================
-// Type Guards and Utilities
-// =============================================================================
+// Type Guards
 
 export function isValidTrack(track: unknown): track is Track {
   return typeof track === "object" && track !== null && "id" in track && "title" in track && "preview" in track && "artist" in track && "album" in track;
