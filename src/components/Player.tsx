@@ -87,14 +87,19 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   }, [dispatch]);
 
   // Handle progress bar interaction (click and drag)
-  const handleProgressInteraction = useCallback(
+  const handleProgressChange = useCallback(
     (clientX: number) => {
-      if (!progressRef.current || !audioRef.current) return;
+      if (!progressRef.current || !audioRef.current || !duration) {
+        console.log("Progress change blocked:", { progressRef: !!progressRef.current, audioRef: !!audioRef.current, duration });
+        return;
+      }
 
       const rect = progressRef.current.getBoundingClientRect();
       const x = Math.max(0, Math.min(rect.width, clientX - rect.left));
-      const percentage = (x / rect.width) * 100;
-      const newTime = (percentage / 100) * duration;
+      const percentage = x / rect.width;
+      const newTime = percentage * duration;
+
+      console.log("Progress change:", { x, percentage, newTime, duration });
 
       audioRef.current.currentTime = newTime;
       dispatch(setCurrentTime(newTime));
@@ -105,35 +110,35 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
   // Handle progress bar click
   const handleProgressClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      handleProgressInteraction(e.clientX);
+      handleProgressChange(e.clientX);
     },
-    [handleProgressInteraction],
+    [handleProgressChange],
   );
 
-  // Handle progress bar drag start
+  // Handle progress bar drag
   const handleProgressMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.preventDefault();
       setIsDragging(true);
-      handleProgressInteraction(e.clientX);
-    },
-    [handleProgressInteraction],
-  );
 
-  // Handle mouse move during drag
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
-      if (isDragging) {
-        handleProgressInteraction(e.clientX);
-      }
-    },
-    [isDragging, handleProgressInteraction],
-  );
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        handleProgressChange(moveEvent.clientX);
+      };
 
-  // Handle mouse up to end drag
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+      const handleMouseUp = () => {
+        setIsDragging(false);
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+
+      // Initial click
+      handleProgressChange(e.clientX);
+    },
+    [handleProgressChange],
+  );
 
   // Format time
   const formatTime = (time: number): string => {
@@ -146,19 +151,6 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
 
   // Calculate progress percentage
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
-
-  // Global drag listeners for progress bar
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
-
-      return () => {
-        document.removeEventListener("mousemove", handleMouseMove);
-        document.removeEventListener("mouseup", handleMouseUp);
-      };
-    }
-  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   // Handle audio element
   useEffect(() => {
@@ -189,7 +181,7 @@ const Player: React.FC<PlayerProps> = ({ className = "" }) => {
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [dispatch, isDragging]);
+  }, [dispatch]); // Remove isDragging from dependencies
 
   // Handle song change
   useEffect(() => {
